@@ -1,6 +1,6 @@
 # Bitmapper
 
-Ce programme permet de transforer un fichier PNG en fichier BMP (bitmap d'où bitmapper)
+Ce programme permet de transformer un fichier PNG en fichier BMP (bitmap d'où bitmapper)
 
 ### Utilisation
 

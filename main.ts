@@ -1,5 +1,8 @@
 import { endian, tailles, fichierIncorrecte, decoder } from "./utils.ts";
 
+if(Deno.args.length == 0) {
+    throw new Error(`Vous n'avez pas mentionner d'image`)
+}
 const fichier = Deno.args[0];
 const incorrecte = fichierIncorrecte(fichier)
 if(incorrecte) {

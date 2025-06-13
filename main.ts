@@ -73,7 +73,6 @@ for(let y = height - 1; y >= 0; y--) {
 
         if(transparant) {
             bmp.set([rvba[2], rvba[1], rvba[0], rvba[3]], i)
-            console.log(`alpha ${x}:${y} -> ${rvba[3]}`)
         } else {
             rvba.reverse()
             bmp.set(rvba, i)

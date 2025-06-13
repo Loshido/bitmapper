@@ -3,7 +3,10 @@ import { endian, tailles, fichierIncorrecte, decoder } from "./utils.ts";
 if(Deno.args.length == 0) {
     throw new Error(`Vous n'avez pas mentionner d'image`)
 }
+
 const fichier = Deno.args[0];
+const transparant = Deno.args.length >= 2 && Deno.args[1] === 'transparent'
+const taille_pixel = transparant ? 4 : 3;
 const incorrecte = fichierIncorrecte(fichier)
 if(incorrecte) {
     throw new Error(incorrecte)
@@ -17,12 +20,11 @@ const { width, height } = png.header
 const { 
     taille_fichier,
     taille_image,
-    taille_ligne,
     padding 
-} = tailles(width, height)
+} = tailles(width, height, taille_pixel)
 
 const bmp_path = `${fichier.slice(0, -4)}.bmp`
-const bmp = new Uint8Array(taille_ligne * height * 3 + 54)
+const bmp = new Uint8Array(taille_fichier)
 
 console.log(`Conversion de '${fichier}' en '${bmp_path}'`)
 
@@ -48,7 +50,7 @@ bmp.set(
         ...endian(width, 4), // largeur image,
         ...endian(height, 4), // hauteur image,
         ...endian(1, 2), // color planes
-        ...endian(24, 2), // bits per pixel
+        ...endian(taille_pixel * 8, 2), // bits per pixel
         ...endian(0, 4), // no compression
         ...endian(taille_image, 4), // taille_image
         ...endian(2835, 4), // hResolution (72 DPI)
@@ -62,19 +64,25 @@ bmp.set(
 for(let y = height - 1; y >= 0; y--) {
     for(let x = 0; x < width; x++) {
         const offset = 4 * (y * width + x)
-        const rvb = png.body.slice(offset, offset + 3)
+        const rvba = png.body.slice(offset, offset + taille_pixel)
 
-        if(rvb.some(channel => channel === undefined)) {
+        if(rvba.some(channel => channel === undefined)) {
             console.warn(`Un pixel a été passé (${x}:${y})`)
             continue
         }
 
-        rvb.reverse()
-        bmp.set(rvb, i)
-        i += 3
+        if(transparant) {
+            bmp.set([rvba[2], rvba[1], rvba[0], rvba[3]], i)
+            console.log(`alpha ${x}:${y} -> ${rvba[3]}`)
+        } else {
+            rvba.reverse()
+            bmp.set(rvba, i)
+        }
+        
+        i += taille_pixel
     }
     // "Chaque ligne doit toujours occuper un nombre d'octets multiple de 4"
-    for (let i = 0; i < padding; i++) {
+    for (let j = 0; j < padding; j++) {
         bmp[i++] = 0;
     }
 }

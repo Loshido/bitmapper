@@ -1,7 +1,7 @@
 {
   "tasks": {
     "map": "deno run --allow-read --allow-write main.ts",
-    "build": "deno compile --allow-read --allow-write --no-code-cache --deny-net --deny-env main.ts "
+    "build": "deno compile --allow-read --allow-write --no-code-cache --deny-net --deny-env main.ts"
   },
   "imports": {
     "@img/png": "jsr:@img/png@^0.1.2",

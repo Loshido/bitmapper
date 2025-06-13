@@ -9,11 +9,11 @@ export function endian(valeur: number, octets: number): number[] {
     return result;
 }
 
-export function tailles(largeur: number, hauteur: number) {
-    const taille_ligne = Math.ceil((largeur * 3) / 4) * 4;
+export function tailles(largeur: number, hauteur: number, taille_pixel: number) {
+    const taille_ligne = Math.ceil((largeur * taille_pixel) / 4) * 4;
     const taille_image = taille_ligne * hauteur;
     const taille_fichier = 14 + 40 + taille_image;
-    const padding = taille_ligne - largeur * 3;
+    const padding = taille_ligne - largeur * taille_pixel;
 
     return {
         taille_ligne,
